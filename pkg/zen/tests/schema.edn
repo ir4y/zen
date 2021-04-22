@@ -88,10 +88,11 @@
 
  mytag {:zen/tags #{zen/tag}}
  mysym {:zen/tags #{mytag}}
+
  list-example {:zen/tags #{test-case}
                :schema {:type zen/list
                         :nth {0 {:type zen/symbol :tags #{mytag}}}}
-               :cases {:valid-list {:example (mysym :b :c) :valid true}
+               :cases {:valid-list {:example (zen.tests.schema/mysym :b :c) :valid true}
                        :invalid-list {:example (:ups :b :c)
                                       :result [{:message "Expected type of 'symbol, got 'keyword", :type "primitive-type", :path [0], :schema [:nth 0]}]}
                        :invalid-list-2 {:example (ups/ups :b :c)
@@ -109,6 +110,6 @@
                       :type zen/map
                       :keys {:path {:type zen/apply :tags #{extract-fns}}}}
 
-             :cases {:valid {:example {:path (myfn :a :b :c)} :valid true}}}
+             :cases {:valid {:example {:path (zen.tests.schema/myfn :a :b :c)} :valid true}}}
 
  }

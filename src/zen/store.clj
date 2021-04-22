@@ -19,19 +19,36 @@
        (mapv (fn [x] (if (keyword? x) (subs (str x) 1) (str x))))
        (str/join "->" )))
 
+(defn namespace-symbols [ctx ns-str ns-name nmsps k resource]
+  (cond
+    (map? resource) (->> resource
+                         (reduce 
+                          (fn [acc [kk v]]
+                            (assoc acc kk (namespace-symbols ctx ns-str ns-name nmsps k v))
+                            ) {}))
+    ;; early exit on list - interpreted as code
+    (list? resource) resource
+
+    (set? resource)
+    (into #{} (mapv #(namespace-symbols ctx ns-str ns-name nmsps k %) resource))
+
+    (vector? resource)
+    (mapv #(namespace-symbols ctx ns-str ns-name nmsps k %) resource)
+
+    (symbol? resource)
+    (if (namespace resource)
+      (do (when-not (get-in @ctx [:symbols resource])
+            (swap! ctx update :errors conj {:message (format "Could not resolve symbol '%s in %s/%s" resource ns-name k)}))
+          resource)
+      (do (when-not (get nmsps resource)
+            (swap! ctx update :errors conj {:message (format "Could not resolve local symbol '%s in %s/%s" resource ns-name k)}))
+          (symbol ns-str (name resource))))
+
+    :else
+    resource))
+
 (defn eval-resource [ctx ns-str ns-name nmsps k resource]
-  (-> (clojure.walk/postwalk
-       (fn [x]
-         (if (symbol? x)
-           (if (namespace x)
-             (do (when-not (get-in @ctx [:symbols x])
-                   (swap! ctx update :errors conj {:message (format "Could not resolve symbol '%s in %s/%s" x ns-name k)}))
-                 x)
-             (do (when-not (get nmsps x)
-                   (swap! ctx update :errors conj {:message (format "Could not resolve local symbol '%s in %s/%s" x ns-name k)}))
-                 (symbol ns-str (name x))))
-           x))
-       resource)
+  (-> (namespace-symbols ctx ns-str ns-name nmsps k resource)
       (assoc ;;TODO :zen/ns ns-name
              :zen/name (symbol (name ns-name) (name k)))))
 
@@ -55,9 +72,7 @@
         ns-str (name ns-name)
         sym (symbol ns-str (name k))
         res (eval-resource ctx ns-str ns-name nmsps k v)]
-    (swap! ctx (fn [ctx] (update-in ctx [:symbols sym] (fn [x]
-                                                        #_(when x (println "WARN: reload" (:zen/name res)))
-                                                        res))))
+    (swap! ctx (fn [ctx] (update-in ctx [:symbols sym] (fn [_] res))))
     (doseq [tg (:zen/tags res)]
       (swap! ctx update-in [:tags tg] (fn [x] (conj (or x #{}) sym))))
     res))

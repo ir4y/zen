@@ -1,2 +1,6 @@
 {ns dyns
- model {:zen/desc "Test dynamic paths"}}
+ model {:zen/desc "Test dynamic paths"}
+
+ code {:zen/desc "Code is not resolved"
+       :symbol model
+       :expression (str (get-in a [:a :b]))}}
