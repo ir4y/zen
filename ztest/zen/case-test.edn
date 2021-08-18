@@ -35,9 +35,9 @@
     :do {:type 'zen.test/validate :schema cases :data {:is true :foo 0}}
     :match
     {:errors [{:path [:foo]
-               :type "string"
+               :type "integer.min"
                :message "Expected  >= 1, got 0"
-               :schema [cases :case 0 :then :keys :foo :minLength]}]}}
+               :schema [cases :case 0 :then :keys :foo :min]}]}}
    {:desc "Checks if nothing was given"
     :do {:type 'zen.test/validate :schema cases :data {:nothing-given here}}
     :match
