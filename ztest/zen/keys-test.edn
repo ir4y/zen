@@ -350,6 +350,13 @@
              :minItems 4
              :maxItems 6}}}
 
+ vector-schema-every
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:a {:type zen/vector
+             :every {:type zen/string
+                     :regex "hello"}}}}
+
  vector-test ;; TODO :schema-index validation
  {:zen/tags #{zen.test/case}
   :title "Vector validations in map"
@@ -375,6 +382,16 @@
                :type "vector"
                :message "Expected <= 6, got 7"
                :schema [vector-schema :keys :a :maxItems]}]}}
+   {:desc "Validate every value in collection - fail because of unknown element"
+    :do {:type 'zen.test/validate :schema vector-schema-every :data {:a ["hello" "hello" "hello" "unknown"]}}
+    :match {:errors [{:message "Expected match /hello/, got \"unknown\""
+                      :type "string.regex"
+                      :path [:a 3]
+                      :schema
+                      [zen.keys-test/vector-schema-every :keys :a :every :regex]}]}}
+   {:desc "Validate every value in collection"
+    :do {:type 'zen.test/validate :schema vector-schema-every :data {:a ["hello" "hello" "hello"]}}
+    :match {:errors zen.test/nil?}}
 
    {:desc "Valid vector was given"
     :do {:type 'zen.test/validate :schema vector-schema :data {:a [1 2 3 4 5]}}
