@@ -26,14 +26,14 @@
   :title "Boolean validations in map"
   :steps
   [{:desc "Checks if given value has invalid type"
-    :do {:type 'zen.test/validate :schema keyword-schema :data {:a "abc"}}
+    :do {:type 'zen.test/validate :schema boolean-schema :data {:a "abc"}}
     :match
     {:errors [{:path [:a]
                :type "primitive-type"
                :message "Expected type of 'boolean, got 'string"
-               :schema [keyword-schema :keys :a]}]}}
+               :schema [boolean-schema :keys :a]}]}}
    {:desc "Valid boolean was given"
-    :do {:type 'zen.test/validate :schema keyword-schema :data {:a true}}
+    :do {:type 'zen.test/validate :schema boolean-schema :data {:a true}}
     :match
     {:errors zen.test/nil?}}]}
 
