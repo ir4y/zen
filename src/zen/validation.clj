@@ -374,13 +374,13 @@
   [_ ctx acc {ml :min mx :max} data]
   (if (integer? data)
     (let [acc (if (and ml (> ml data))
-                (add-error ctx acc {:message (format "Expected  >= %s, got %s" ml data) :type "string"}
-                           {:schema [:minLength]})
+                (add-error ctx acc {:message (format "Expected  >= %s, got %s" ml data) :type "integer.min"}
+                           {:schema [:min]})
                 acc)
 
           acc (if (and mx (< mx data))
-                (add-error ctx acc {:message (format "Expected  <= %s, got %s" mx data) :type "string"}
-                           {:schema [:maxLength]})
+                (add-error ctx acc {:message (format "Expected  <= %s, got %s" mx data) :type "integer.max"}
+                           {:schema [:max]})
                 acc)]
       acc)
     (add-error ctx acc {:message (format "Expected type of 'integer, got '%s" (pretty-type data)) :type "primitive-type"})))
@@ -390,13 +390,13 @@
   [_ ctx acc {ml :min mx :max} data]
   (if (number? data)
     (let [acc (if (and ml (> ml data))
-                (add-error ctx acc {:message (format "Expected  >= %s, got %s" ml data) :type "string"}
-                           {:schema [:minLength]})
+                (add-error ctx acc {:message (format "Expected  >= %s, got %s" ml data) :type "number.min"}
+                           {:schema [:min]})
                 acc)
 
           acc (if (and mx (< mx data))
-                (add-error ctx acc {:message (format "Expected  <= %s, got %s" mx data) :type "string"}
-                           {:schema [:maxLength]})
+                (add-error ctx acc {:message (format "Expected  <= %s, got %s" mx data) :type "number.max"}
+                           {:schema [:max]})
                 acc)]
       acc)
     (add-error ctx acc {:message (format "Expected type of 'number, got '%s" (pretty-type data)) :type "primitive-type"})))

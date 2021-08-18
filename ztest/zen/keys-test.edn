@@ -16,6 +16,27 @@
     :match
     {:errors zen.test/nil?}}]}
 
+ boolean-schema
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:a {:type zen/boolean}}}
+
+ boolean-tests
+ {:zen/tags #{zen.test/case}
+  :title "Boolean validations in map"
+  :steps
+  [{:desc "Checks if given value has invalid type"
+    :do {:type 'zen.test/validate :schema keyword-schema :data {:a "abc"}}
+    :match
+    {:errors [{:path [:a]
+               :type "primitive-type"
+               :message "Expected type of 'boolean, got 'string"
+               :schema [keyword-schema :keys :a]}]}}
+   {:desc "Valid boolean was given"
+    :do {:type 'zen.test/validate :schema keyword-schema :data {:a true}}
+    :match
+    {:errors zen.test/nil?}}]}
+
  keyword-schema
  {:zen/tags #{zen/schema}
   :type zen/map
@@ -247,14 +268,14 @@
     :do {:type 'zen.test/validate :schema integer-schema :data {:a 5}}
     :match
     {:errors [{:path [:a]
-               :type "integer.max" ;; WHY?
+               :type "integer.max"
                :message "Expected  <= 4, got 5"
                :schema [integer-schema :keys :a]}]}}
    {:desc "Checks if given value is below :min"
     :do {:type 'zen.test/validate :schema integer-schema :data {:a 1}}
     :match
     {:errors [{:path [:a]
-               :type "integer.min" ;; WHY?
+               :type "integer.min"
                :message "Expected  >= 2, got 1"
                :schema [integer-schema :keys :a]}]}}
    {:desc "Valid integer was given"

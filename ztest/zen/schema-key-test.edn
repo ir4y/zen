@@ -84,7 +84,7 @@
                                                      :foo "something"}}
     :match
     {:errors [{:path [:bar]
-               :type "string"
+               :type "integer.min"
                :message "Expected  >= 1, got 0"
                :schema [two :schema-key person :keys :bar :minLength]}]}}
    {:desc "Checks if there are additional keys"
