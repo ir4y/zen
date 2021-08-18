@@ -37,6 +37,8 @@
     :match
     {:errors zen.test/nil?}}]}
 
+
+
  keyword-schema
  {:zen/tags #{zen/schema}
   :type zen/map
@@ -584,4 +586,35 @@
    {:desc "Valid data given"
     :do {:type 'zen.test/validate :schema enums-schema :data {:gender "Female"}}
     :match
-    {:errors zen.test/nil?}}]}}
+    {:errors zen.test/nil?}}]}
+
+ case-schema
+ {:zen/tags #{zen/schema}
+  :type zen/vector
+  :every
+  {:type zen/case
+   :case [{:when {:type zen/string}
+           :then {:type zen/string
+                  :regex "hello"}}
+          {:when {:type zen/map}
+           :then {:type zen/map
+                  :require #{:word}
+                  :keys {:word {:type zen/string
+                                :regex "hello"}}}}]}}
+
+ case-tests
+ {:zen/tags #{zen.test/case}
+  :title "case validation"
+  :steps
+  [{:desc "Checks if collection contains unknown element type"
+    :do {:type 'zen.test/validate :schema case-schema :data ["hello" {:word "hello"} "unknown"]}
+    :match {:errors [{:message "Expected match /hello/, got \"unknown\"",
+                      :type "string.regex",
+                      :path [2],
+                      :schema [zen.keys-test/case-schema :every :case 0 :then :regex]}]}}
+   {:desc "Checks if every collection element is validated by case"
+    :do {:type 'zen.test/validate :schema case-schema :data ["hello" {:word "hello"}]}
+    :match {:errors zen.test/nil?}}]}
+
+
+ }
