@@ -63,6 +63,18 @@
   :type zen/map
   :keys {:a {:type zen/date}}}
 
+ date-schema-past
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:a {:type zen/date
+             :in-past true}}}
+
+ date-schema-future
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:a {:type zen/date
+             :in-future true}}}
+
  date-tests
  {:zen/tags #{zen.test/case}
   :title "Date validations in map"
@@ -109,6 +121,14 @@
                :type "primitive-type"
                :message "Expected type of 'date, got \"2021-06-44\""
                :schema [date-schema :keys :a]}]}}
+   {:desc "Cheks if given str with day from past"
+    :do {:type 'zen.test/validate :schema date-schema-past :data {:a "2021-06-20"}}
+    :match
+    {:errors zen.test/nil?}}
+   {:desc "Cheks if given str with day from future"
+    :do {:type 'zen.test/validate :schema date-schema-future :data {:a "2100-06-20"}}
+    :match
+    {:errors zen.test/nil?}}
    {:desc "Valid keyword was given"
     :do {:type 'zen.test/validate :schema date-schema :data {:a "2021-08-06"}}
     :match
