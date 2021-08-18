@@ -1,10 +1,9 @@
 (ns zen.validation-test
   (:require [matcho.core :as matcho]
-            [clojure.test :refer [deftest is testing]]
+            [clojure.test :refer [deftest]]
             [clojure.walk]
             [clojure.string :as str]
             [zen.core]))
-
 
 ;; (defmacro match-schema [sch data errs]
 ;;   `(let [res# (sub/validate-schema ztx ~sch ~data)]
@@ -29,11 +28,14 @@
   (def ztx (zen.core/new-context {:unsafe true}))
   ;; (zen.core/read-ns ztx 'zen.all-tests)
   (zen.core/read-ns ztx 'zen.require-test)
+  (zen.core/read-ns ztx 'zen.keys-test)
+  (zen.core/read-ns ztx 'zen.schema-key-test)
+  (zen.core/read-ns ztx 'zen.case-test)
 
   (doseq [case (zen.core/get-tags ztx 'zen.test/case)]
     (println "## Case: " (or (:title case) (:id case)))
     (doseq [{desc :desc do :do match :match} (:steps case)]
-      (println "  validate: " desc " \n  "  (:schema do) "\n  "(:data do))
+      (println "  validate: " desc " \n  "  (:schema do) "\n  " (:data do))
       (let [res (zen.core/validate ztx #{(:schema do)} (:data do))]
         (if (empty? (:errors res))
           (println "    valid!")
@@ -41,4 +43,3 @@
                                    (mapv #(str "     " %))
                                    (str/join "\n"))))
         (matcho/match res (translate-to-matcho match))))))
-
