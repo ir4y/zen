@@ -247,14 +247,14 @@
     :do {:type 'zen.test/validate :schema integer-schema :data {:a 5}}
     :match
     {:errors [{:path [:a]
-               :type "string" ;; WHY?
+               :type "integer.max" ;; WHY?
                :message "Expected  <= 4, got 5"
                :schema [integer-schema :keys :a]}]}}
    {:desc "Checks if given value is below :min"
     :do {:type 'zen.test/validate :schema integer-schema :data {:a 1}}
     :match
     {:errors [{:path [:a]
-               :type "string" ;; WHY?
+               :type "integer.min" ;; WHY?
                :message "Expected  >= 2, got 1"
                :schema [integer-schema :keys :a]}]}}
    {:desc "Valid integer was given"
@@ -284,14 +284,14 @@
     :do {:type 'zen.test/validate :schema number-schema :data {:a 4.4}}
     :match
     {:errors [{:path [:a]
-               :type "string" ;; WHY?
+               :type "number.max" ;; WHY?
                :message "Expected  <= 3.3, got 4.4"
                :schema [number-schema :keys :a]}]}}
    {:desc "Checks if given value is below :min"
     :do {:type 'zen.test/validate :schema number-schema :data {:a 0.7}}
     :match
     {:errors [{:path [:a]
-               :type "string" ;; WHY?
+               :type "number.min" ;; WHY?
                :message "Expected  >= 1.1, got 0.7"
                :schema [number-schema :keys :a]}]}}
    {:desc "Valid number was given"
