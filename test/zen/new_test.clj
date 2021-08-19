@@ -31,6 +31,7 @@
   (zen.core/read-ns ztx 'zen.keys-test)
   (zen.core/read-ns ztx 'zen.schema-key-test)
   (zen.core/read-ns ztx 'zen.case-test)
+  (zen.core/read-ns ztx 'zen.map-test)
 
   (doseq [case (zen.core/get-tags ztx 'zen.test/case)]
     (doseq [{desc :desc do :do match :match} (:steps case)]

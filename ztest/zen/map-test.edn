@@ -9,6 +9,45 @@
   :keys {:key1 {:type zen/string}
          :key2 {:type zen/string}}}
 
+ color-channel
+ {:zen/tags #{zen/schema}
+  :type zen/integer
+  :max 255
+  :min 0}
+
+ values-map
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :values {:type zen/map
+           :require #{:r :g :b}
+           :values {:confirms #{color-channel}}}
+  :key {:type zen/map
+        :require #{:x :y}
+        :values {:type zen/integer}}}
+
+ values-test
+ {:zen/tags #{zen.test/case}
+  :title "Values test"
+  :steps
+  [{:desc "Valid map"
+    :do {:type 'zen.test/validate
+         :schema values-map
+         :data {{:x 0 :y 0} {:r 255 :g 255 :b 0}}}
+    :match
+    {:errors zen.test/nil?}}
+   {:desc "Valid map with undeclared key"
+    :do {:type 'zen.test/validate
+         :schema values-map
+         :data {{:x 0 :y 0} {:r 255 :g 255 :b 0 :a 50}}}
+    :match
+    {:errors zen.test/nil?}}
+   {:desc "Valid map with undeclared key"
+    :do {:type 'zen.test/validate
+         :schema values-map
+         :data {{:x 0 :y "non-number"} {:r 255 :g 255 :b 300}}}
+    :match
+    {:errors [{} {} nil]}}]}
+
  simple-test
  {:zen/tags #{zen.test/case}
   :title "Type validation in map"
@@ -17,6 +56,6 @@
     :do {:type 'zen.test/validate :schema m1 :data {:key1 1 :key2 true}}
     :match
     {:errors [{:path [:key1]
-               :message "Expected type 'zen/string got class java.lang.Long"}
+               :message "Expected type of 'string, got 'long"}
               {:path [:key2]
-               :message "Expected type 'zen/string got class java.lang.Boolean"}]}}]}}
+               :message "Expected type of 'string, got 'boolean"}]}}]}}
