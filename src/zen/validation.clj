@@ -499,7 +499,7 @@
 
 (defmethod validate-node-rule ::fx [ctx acc rule rule-val data]
   (let [fx (-> (emit-fx ctx rule rule-val data)
-               (assoc :path (:path acc)
+               (assoc :path (conj (:path acc) rule)
                       :schema (:schema acc)))]
     (update acc :effects conj fx)))
 
