@@ -67,6 +67,38 @@
                :schema [zen.map-test/picture-map :key]}
               nil]}}]}
 
+ map-with-unknown-keys-open-validation
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :validation-type :open
+  :require #{:a}
+  :keys {:b {:type zen/number}}}
+
+ map-with-unknown-keys-close-validation
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :validation-type :close
+  :keys {:b {:type zen/number}}}
+
+ validation-types-test
+ {:zen/tags #{zen.test/case}
+  :title "Open/Close validation types test"
+  :steps
+  [{:desc "Close validation"
+    :do {:type zen.test/validate
+         :schema map-with-unknown-keys-close-validation
+         :data {:b 1
+                :a 1}}
+    :match {:errors
+            [{:type "unknown-key" :path [:a]}]}}
+   {:desc "Open validation"
+    :do {:type zen.test/validate
+         :schema map-with-unknown-keys-open-validation
+         :data {:b 1
+                :a 1}}
+    :match {:errors zen.test/nil?}}]}
+
+
  simple-test
  {:zen/tags #{zen.test/case}
   :title "Type validation in map"
