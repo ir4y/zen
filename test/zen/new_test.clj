@@ -36,6 +36,8 @@
   (zen.core/read-ns ztx 'zen.fn-test)
   (zen.core/read-ns ztx 'zen.slicing-test)
 
+  (zen.core/read-ns ztx 'zen.core-validate-test)
+
   (matcho/match @ztx {:errors empty?})
 
   (doseq [case (zen.core/get-tags ztx 'zen.test/case)]
