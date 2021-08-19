@@ -101,4 +101,50 @@
                                                      :bar 42
                                                      :foo "something"}}
     :match
-    {:errors zen.test/nil?}}]}}
+    {:errors zen.test/nil?}}]}
+
+ urn:extension:AnimalPatient.species
+ {:zen/tags #{zen/schema}
+  :type     zen/map
+  :keys     {:valueCode {:type zen/string}}}
+
+ AnimalPatient
+ {:zen/tags #{zen/schema}
+  :type     zen/map
+  :keys     {:resourceType {:type  zen/string
+                            :const {:value "Patient"}}
+             :extension    {:type  zen/vector
+                            :every {:type       zen/map
+                                    :keys       {:url {:type zen/string}}
+                                    :schema-key {:key :url, :ns "zen.schema-key-test"}}}}}
+
+ extension-test
+ {:zen/tags #{zen.test/case}
+  :title "Validate fhir extension"
+  :steps
+  [{:desc "Extension defined and correct"
+    :do {:type zen.test/validate
+         :schema AnimalPatient
+         :data {:resourceType "Patient"
+                :extension [{:url "urn:extension:AnimalPatient.species"
+                             :valueCode "dog"}]}}
+    :match
+    {:errors [nil]}}
+
+   {:desc "Extension defined and incorrect"
+    :do {:type zen.test/validate
+         :schema AnimalPatient
+         :data {:resourceType "Patient"
+                :extension [{:url "urn:extension:AnimalPatient.species"
+                             :valueCoding {:code "dog"}}]}}
+    :match
+    {:errors [{:type "unknown-key", :path [:extension 0 :valueCoding]}]}}
+
+   {:desc "Extension undefined"
+    :do {:type zen.test/validate
+         :schema AnimalPatient
+         :data {:resourceType "Patient"
+                :extension [{:url "urn:extension:AnimalPatient.breed"
+                             :valueCode "doge"}]}}
+    :match
+    {:errors [{:type "schema", :path [:extension 0]}]}}]}}
