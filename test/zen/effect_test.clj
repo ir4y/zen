@@ -66,7 +66,7 @@
                   {:zen/tags    #{'zen/schema}
                    :type        'zen/map
                    'test.fx/only-one 1}
-                  [{:message "Expected type of 'vector, got long",
+                  [{:message "Expected type of 'vector, got 'long",
                     :type    "type",
                     :path    ['test.fx/only-one],
                     :schema  ['zen/schema :keyname-schemas 'test.fx/only-one]}]))
