@@ -1,6 +1,6 @@
 {ns zen.require-test
 
- require #{zen.test}
+ import #{zen.test}
 
  basic-require
  {:zen/tags #{zen/schema}
@@ -117,10 +117,10 @@
     :match {:errors
             [{:type "require",
               :path [:a],
-              :schema [zen.require-test/ab-require :confirms zen.require-test/a-require :require]}
+              :schema [zen.require-test/ab-require :confirms a-require :require]}
              {:type "require",
               :path [:b],
-              :schema [zen.require-test/ab-require :confirms zen.require-test/b-require :require]}
+              :schema [zen.require-test/ab-require :confirms b-require :require]}
              ]}}
 
    {:desc "require & confirms"

@@ -18,28 +18,28 @@
   :title "Schema-key validations in map"
   :steps
   [{:desc "Checks if ref type invalid"
-    :do {:type 'zen.test/validate :schema one :data {:name "str" :txt 43}}
+    :do {:type zen.test/validate :schema one :data {:name "str" :txt 43}}
     :match
     {:errors [{:path [:txt]
                :type "string.type"
                :message "Expected type of 'string, got 'long"
                :schema [one :schema-key str :keys :txt]}]}}
    {:desc "Checks if additional rules not passed"
-    :do {:type 'zen.test/validate :schema one :data {:name "str" :txt "ab"}}
+    :do {:type zen.test/validate :schema one :data {:name "str" :txt "ab"}}
     :match
     {:errors [{:path [:txt]
                :type "string.minLength"
                :message "Expected length >= 5, got 2"
                :schema [one :schema-key str :keys :txt :minLength]}]}}
    {:desc "Checks if there are additional keys"
-    :do {:type 'zen.test/validate :schema one :data {:name "str" :txt "abcef"
+    :do {:type zen.test/validate :schema one :data {:name "str" :txt "abcef"
                                                      :foo "bar"}}
     :match
     {:errors [{:path [:foo]
                :type "unknown-key"
                :message "unknown key :foo"}]}}
    {:desc "Valid data given"
-    :do {:type 'zen.test/validate :schema one :data {:name "str" :txt "foo bar string"}}
+    :do {:type zen.test/validate :schema one :data {:name "str" :txt "foo bar string"}}
     :match
     {:errors zen.test/nil?}}]}
 
@@ -60,7 +60,7 @@
   :title "Schema-key validations in map"
   :steps
   [{:desc "Checks if :require not exist"
-    :do {:type 'zen.test/validate :schema two :data {:man "person"}}
+    :do {:type zen.test/validate :schema two :data {:man "person"}}
     :match
     {:errors [{:path [:bar]
                :type "require"
@@ -71,7 +71,7 @@
                :message ":foo is required"
                :schema [two :schema-key person :require]}]}}
    {:desc "Checks if :require keys exist partially"
-    :do {:type 'zen.test/validate :schema two :data {:man "person"
+    :do {:type zen.test/validate :schema two :data {:man "person"
                                                      :foo "something"}}
     :match
     {:errors [{:path [:bar]
@@ -79,7 +79,7 @@
                :message ":bar is required"
                :schema [two :schema-key person :require]}]}}   
    {:desc "Checks if :require keys exist partially"
-    :do {:type 'zen.test/validate :schema two :data {:man "person"
+    :do {:type zen.test/validate :schema two :data {:man "person"
                                                      :bar 0
                                                      :foo "something"}}
     :match
@@ -88,7 +88,7 @@
                :message "Expected  >= 1, got 0"
                :schema [two :schema-key person :keys :bar :min]}]}}
    {:desc "Checks if there are additional keys"
-    :do {:type 'zen.test/validate :schema two :data {:man "person"
+    :do {:type zen.test/validate :schema two :data {:man "person"
                                                      :bar 42
                                                      :foo "something"
                                                      :nop "should not be here"}}
@@ -97,7 +97,7 @@
                :type "unknown-key"
                :message "unknown key :nop"}]}}
    {:desc "Valid data given"
-    :do {:type 'zen.test/validate :schema two :data {:man "person"
+    :do {:type zen.test/validate :schema two :data {:man "person"
                                                      :bar 42
                                                      :foo "something"}}
     :match

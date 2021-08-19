@@ -17,7 +17,7 @@
               :title "Boolean validation in map"
               :steps
               [{:desc "test boolean validation in map"
-                :do {:type 'zen.test/validate
+                :do {:type zen.test/validate
                      :schema schema
                      :data smth}
                 :match
