@@ -98,6 +98,42 @@
                 :a 1}}
     :match {:errors zen.test/nil?}}]}
 
+ exclusive-keys-map
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :values {:type zen/any}
+  :exclusive-keys #{#{:a :b} #{:b #{:c :d}}}}
+
+ exclusive-keys-test
+ {:zen/tags #{zen.test/case}
+  :title "Exclusive keys test"
+  :steps
+  [{:desc "Invalid key-set"
+    :do {:type 'zen.test/validate
+         :schema exclusive-keys-map
+         :data {:b :beta :c :ceta}}
+    :match
+    {:errors [{:type "map.exclusive-keys"}]}}
+   {:desc "Invalid key-set"
+    :do {:type 'zen.test/validate
+         :schema exclusive-keys-map
+         :data {:a :aeta :b :beta}}
+    :match
+    {:errors [{:type "map.exclusive-keys"}]}}
+   {:desc "Valid key-set"
+    :do {:type 'zen.test/validate
+         :schema exclusive-keys-map
+         :data {:b :beta}}
+    :match
+    {:errors zen.test/nil?}}
+   {:desc "Valid key-set"
+    :do {:type 'zen.test/validate
+         :schema exclusive-keys-map
+         :data {:a :aeta :c :ceta :d :deta}}
+    :match
+    {:errors zen.test/nil?}}
+   ]}
+
 
  simple-test
  {:zen/tags #{zen.test/case}
