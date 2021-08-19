@@ -56,6 +56,15 @@
               {:type "primitive-type",
                :path [{:x 0, :y "non-number"} :y],
                :schema [zen.map-test/picture-map :key :values]}
+              nil]}}
+   {:desc "Invalid map, keys do not pass schema"
+    :do {:type zen.test/validate
+         :schema picture-map
+         :data {[0 0] {:r 255, :g 255, :b 127}}}
+    :match
+    {:errors [{:type "type",
+               :path [[0, 0]]
+               :schema [zen.map-test/picture-map :key]}
               nil]}}]}
 
  simple-test
