@@ -15,38 +15,48 @@
   :max 255
   :min 0}
 
- values-map
+ picture-map
  {:zen/tags #{zen/schema}
+  :zen/desc "Map with coordinates as keys and pixels as values"
   :type zen/map
-  :values {:type zen/map
+  :values {:zen/desc "Pixel map"
+           :type zen/map
            :require #{:r :g :b}
            :values {:confirms #{color-channel}}}
   :key {:type zen/map
-        :require #{:x :y}
-        :values {:type zen/integer}}}
+        :zen/desc "Coordinate map"
+        :values {:type zen/integer}
+        :keys {:x {}, :y {}}}}
 
- values-test
+ values&key-test
  {:zen/tags #{zen.test/case}
-  :title "Values test"
+  :title ":values & :key test"
   :steps
   [{:desc "Valid map"
-    :do {:type 'zen.test/validate
-         :schema values-map
-         :data {{:x 0 :y 0} {:r 255 :g 255 :b 0}}}
+    :do {:type zen.test/validate
+         :schema picture-map
+         :data {{:x 0,  :y 0} {:r 255, :g 127, :b 0}
+                {:x -1, :y 1} {:r 255, :g 127, :b 0}}}
     :match
     {:errors zen.test/nil?}}
    {:desc "Valid map with undeclared key"
-    :do {:type 'zen.test/validate
-         :schema values-map
-         :data {{:x 0 :y 0} {:r 255 :g 255 :b 0 :a 50}}}
+    :do {:type zen.test/validate
+         :schema picture-map
+         :data {{:x 0, :y 0} {:r 255, :g 127, :b 0, :a 50}}}
     :match
     {:errors zen.test/nil?}}
-   {:desc "Valid map with undeclared key"
-    :do {:type 'zen.test/validate
-         :schema values-map
-         :data {{:x 0 :y "non-number"} {:r 255 :g 255 :b 300}}}
+   {:desc "Invalid map, values do not pass schema"
+    :do {:type zen.test/validate
+         :schema picture-map
+         :data {{:x 0, :y "non-number"} {:r 255, :g 255, :b 300}}}
     :match
-    {:errors [{} {} nil]}}]}
+    {:errors [{:type "integer.max",
+               :path [{:x 0, :y "non-number"} :b],
+               :schema [zen.map-test/picture-map :values :values :confirms zen.map-test/color-channel :max]}
+              {:type "primitive-type",
+               :path [{:x 0, :y "non-number"} :y],
+               :schema [zen.map-test/picture-map :key :values]}
+              nil]}}]}
 
  simple-test
  {:zen/tags #{zen.test/case}
