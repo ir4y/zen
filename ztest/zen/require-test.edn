@@ -110,7 +110,7 @@
                       :schema [nested-require :keys :attr :require]
                       :path [:attr]}]}}
 
-   {:desc "require & confirms"
+   {:desc "require & confirms - fail on empty data"
     :do {:type zen.test/validate
          :schema ab-require
          :data {}}
@@ -122,4 +122,11 @@
               :path [:b],
               :schema [zen.require-test/ab-require :confirms zen.require-test/b-require :require]}
              ]}}
+
+   {:desc "require & confirms"
+    :do {:type zen.test/validate
+         :schema ab-require
+         :data {:a "a"
+                :b "b"}}
+    :match {:errors zen.test/empty?}}
    ]}}
