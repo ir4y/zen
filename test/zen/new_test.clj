@@ -34,6 +34,7 @@
   (zen.core/read-ns ztx 'zen.map-test)
   (zen.core/read-ns ztx 'zen.keyname-schemas-test)
   (zen.core/read-ns ztx 'zen.fn-test)
+  (zen.core/read-ns ztx 'zen.slicing-test)
 
   (matcho/match @ztx {:errors empty?})
 

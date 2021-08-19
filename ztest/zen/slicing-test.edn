@@ -1,0 +1,75 @@
+{ns zen.slicing-test
+
+ import #{zen.test}
+
+
+ Person
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:telecom {:type    zen/vector
+                   :every   {:type    zen/map
+                             :require #{:system :value}
+                             :keys    {:system {:type zen/string}
+                                       :value  {:type zen/string}}}
+                   :slicing {:slices {"mobile-phone"
+                                      {:filter {:engine :zen
+                                                :zen    {:type zen/map
+                                                         :keys {:system {:const {:value "mobile-phone"}}}}}
+                                       :schema {:type     zen/vector
+                                                :minItems 1
+                                                :every    {:type zen/map
+                                                           :keys {:os {:type zen/keyword
+                                                                       :enum [{:value :ios}
+                                                                              {:value :android}
+                                                                              {:value :other}]}}}
+                                                :slicing  {:slices {"ios"
+                                                                    {:filter {:engine :zen
+                                                                              :zen    {:type zen/map
+                                                                                       :keys {:os {:const {:value :ios}}}}}
+                                                                     :schema {:type     zen/vector
+                                                                              :minItems 1}}}}}}}
+                             :rest   {:type  zen/vector
+                                      :every {:type zen/map, :validation-type :open}}}}}}
+
+ telecom-slicing-test
+ {:zen/tags #{zen.test/case}
+  :title    "Checks if person has atleast one mobile phone and one of his mobile phones runs ios"
+  :steps
+  [{:desc "Has ios, android and email. Valid"
+    :do   {:type   zen.test/validate
+           :schema Person
+           :data   {:telecom [{:system "mobile-phone"
+                               :value  "+72222222222"
+                               :os     :ios}
+                              {:system   "email"
+                               :value    "foo@bar.baz"
+                               :provider "baz"}
+                              {:system "mobile-phone"
+                               :value  "+71111111111"
+                               :os     :android}]}}
+    :match
+    {:errors [nil]}}
+   {:desc "Has only android. Invalid"
+    :do   {:type   zen.test/validate
+           :schema Person
+           :data   {:telecom [{:system "mobile-phone"
+                               :value  "+72222222222"
+                               :os     :android}
+                              {:system   "email"
+                               :value    "foo@bar.baz"
+                               :provider "baz"}
+                              {:system "mobile-phone"
+                               :value  "+71111111111"
+                               :os     :android}]}}
+    :match
+    {:errors [{} nil]}}
+   {:desc "Has extra telecom with invalid system and missing value"
+    :do   {:type   zen.test/validate
+           :schema Person
+           :data   {:telecom [{:system "mobile-phone"
+                               :value  "+71111111111"
+                               :os     :ios}
+                              {:system    :wrong-type
+                               :extra-key "not error"}]}}
+    :match
+    {:errors [{} {} nil]}}]}}
