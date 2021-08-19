@@ -30,13 +30,11 @@
   (matcho/match :step-type-is-not-implemented true))
 
 (defmethod do-step 'zen.test/validate [ztx step]
-  (let [res (zen.core/validate ztx #{(get-in step [:do :schema])} (get-in step [:do :data]))]
-    (matcho/match res (translate-to-matcho (:match step)))))
+  (zen.core/validate ztx #{(get-in step [:do :schema])} (get-in step [:do :data])))
 
-(defmethod do-step 'zen.test/validate-schema [ztx {do :do match :match}]
-  (let [sch (zen.core/get-symbol ztx (:schema do))
-        res (zen.core/validate ztx '#{zen/schema} sch)]
-    (matcho/match res (translate-to-matcho match))))
+(defmethod do-step 'zen.test/validate-schema [ztx step]
+  (let [sch (zen.core/get-symbol ztx (get-in step [:do :schema]))]
+    (zen.core/validate ztx '#{zen/schema} sch)))
 
 (defmulti report-step (fn [_ztx step _result _test-case] (get-in step [:do :type])))
 
@@ -71,7 +69,8 @@
   #_(matcho/match @ztx {:errors empty?})
 
   (doseq [test-case (zen.core/get-tags ztx 'zen.test/case)
-          step,     (:steps test-case)]
-    (let [step-res (do-step ztx step)]
-      (when-not (true? step-res)
-        (report-step ztx step step-res test-case)))))
+          step      (:steps test-case)
+          :let      [step-res  (do-step ztx step)
+                     match-res (matcho/match step-res (translate-to-matcho (:match step)))]
+          :when     (not= true match-res)]
+    (report-step ztx step match-res test-case)))
