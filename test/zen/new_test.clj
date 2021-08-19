@@ -73,4 +73,11 @@
           :let      [step-res  (do-step ztx step)
                      match-res (matcho/match step-res (translate-to-matcho (:match step)))]
           :when     (not= true match-res)]
-    (report-step ztx step match-res test-case)))
+    (report-step ztx step match-res test-case))
+
+  (comment
+    (time
+      (dotimes [_ 1000]
+        (doseq [test-case (zen.core/get-tags ztx 'zen.test/case)
+                step      (:steps test-case)]
+          (do-step ztx step))))))
