@@ -443,6 +443,13 @@
              :minItems 4
              :maxItems 6}}}
 
+ list-every
+ {:zen/tags #{zen/schema}
+  :type zen/map
+  :keys {:a {:type zen/list
+             :every {:type zen/string
+                     :regex "hello"}}}}
+
  list-test ;; TODO :schema-index validation
  {:zen/tags #{zen.test/case}
   :title "List validations in map"
@@ -468,6 +475,12 @@
                :type "list"
                :message "Expected <= 6, got 7"
                :schema [list-schema :keys :a :maxItems]}]}}
+   {:desc "Invalid coll for :every check"
+    :do {:type zen.test/validate :schema list-every :data {:a ("beta" "ceta")}}
+    :match {:errors [{:type "string.regex"}]}}
+   {:desc "Valid coll for :every check"
+    :do {:type zen.test/validate :schema list-every :data {:a ("hello" "hello" "hello")}}
+    :match {:errors zen.test/nil?}}
    {:desc "Valid vector was given"
     :do {:type zen.test/validate :schema list-schema :data {:a (1 2 3 4 5)}}
     :match
