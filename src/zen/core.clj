@@ -30,7 +30,7 @@
 (defn validate [ztx symbols data]
   (-> (zen.validation/validate ztx symbols data)
       (select-keys [:errors :warnings :effects])
-      (update :errors (fn [x] (sort-by :path x)))))
+      (update :errors (fn [x] (vec (sort-by :path x))))))
 
 (defn validate-schema [ztx schema data]
   (zen.validation/validate-schema ztx schema data))
