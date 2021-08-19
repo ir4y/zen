@@ -1,39 +1,31 @@
 {ns zen.effects-test
- require {test zen.test}
+ import #{zen.test}
 
- my-effect
- {:zen/tags #{zen/effect zen/schema}
-  :zen/desc "Declaration of effect"
-  :type zen/map
-  :require #{:num-keys}
-  :keys {:num-keys {:type zen/integer}}}
+ only-one
+ {:zen/tags #{zen/schema-fx zen/schema}
+  :type     zen/vector
+  :every    {:type zen/keyword}}
 
- model
+ subj
  {:zen/tags #{zen/schema}
-  :type zen/map
-  :fx {:zen.effects-test/my-effect {:num-keys 3}}}
+  :type     zen/map
+  :keys     {:name  {:type zen/string}
+             :email {:type zen/string}}
+  only-one      [:name :email]}
 
- test
- {:zen/tags #{test/case}
-  :schema model
-  :cases
-  {
-
-   "test effect is produced"
-   {:data {:a 1}
-    :effects [{:type :zen.effects-test/my-effect
-               :path []
-               :schema [model :fx :zen.effects-test/my-effect]
-               :data {:a 1}
-               :args {:num-keys 3}}]}
-
-   "test valid case"
-   {:data {:a 1 :b 2 :c 3}
-    :errors test/empty?}
-
-
-
-   }}
-
+ fx-tests
+ {:zen/tags #{zen.test/case}
+  :title ""
+  :steps
+  [{:desc "FX emit"
+    :do {:type zen.test/validate
+         :schema subj
+         :data {:name "somename" :email "somemail@mail.com"}}
+    :match {:errors zen.test/nil?
+            :effects [{:name   zen.effects-test/only-one
+                       :path   [zen.effects-test/only-one]
+                       :data   {:name "somename" :email "somemail@mail.com"}
+                       :params [:name :email]}
+                      zen.test/nil?]}}]}
 
  }
