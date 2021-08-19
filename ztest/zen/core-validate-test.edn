@@ -43,4 +43,34 @@
           {:desc "Schema is correct"
            :do {:type zen.test/validate-schema
                 :schema good-schema}
+           :match {:errors [nil]}}]}
+
+ not-schema
+ {}
+
+ schema-with-bad-confirms
+ {:zen/tags #{zen/schema}
+  :confirms #{not-schema}}
+
+ some-schema
+ {:zen/tags #{zen/schema}
+  :type zen/map}
+
+ schema-with-good-confirms
+ {:zen/tags #{zen/schema}
+  :confirms #{some-schema}}
+
+ bad-confirms-test
+ {:zen/tags #{zen.test/case}
+  :title    "Tests each element of :confirms tagged as a schema"
+  :steps [{:desc "Confirms contains schema without schema tag"
+           :do {:type zen.test/validate-schema
+                :schema schema-with-bad-confirms}
+           :match {:errors [{:type "symbol",
+                             :path [:confirms 0],
+                             :schema [zen/schema :keys :confirms :every :tags]}
+                            nil]}}
+          {:desc "Confirms contains schema with schema tag"
+           :do {:type zen.test/validate-schema
+                :schema schema-with-good-confirms}
            :match {:errors [nil]}}]}}
