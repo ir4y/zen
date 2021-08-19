@@ -8,7 +8,6 @@
   :keys {:keyword {:type zen/keyword}
          "string" {:type zen/string}}}
 
-
  validate-sort-by-error-test
  {:zen/tags #{zen.test/case}
   :title    "zen.core/validate sort-by class cast error"
@@ -23,4 +22,25 @@
                 :schema keys-with-different-types
                 :data {:keyword "s"
                        "string" :k}}
-           :match {:errors [{} {} nil]}}]}}
+           :match {:errors [{} {} nil]}}]}
+
+ bad-schema
+ {:zen/tags #{zen/schema}
+  :invalid-key :should-be-error-on-load}
+
+ good-schema
+ {:zen/tags #{zen/schema}
+  :type zen/any}
+
+ bad-schema-test
+ {:zen/tags #{zen.test/case}
+  :title    "Tests if schema has errors"
+  :steps [{:desc "Schema contains invalid key"
+           :do {:type zen.test/validate-schema
+                :schema bad-schema}
+           :match {:errors [{:path [:invalid-key], :type "unknown-key"}
+                            nil]}}
+          {:desc "Schema is correct"
+           :do {:type zen.test/validate-schema
+                :schema good-schema}
+           :match {:errors [nil]}}]}}

@@ -24,6 +24,35 @@
 
 ;; (translate-to-matcho {:key 'zen.test/empty?})
 
+(defmulti do-step (fn [_ztx step] (get-in step [:do :type])))
+
+(defmethod do-step :default [_ztx _step]
+  (matcho/match :step-type-is-not-implemented true))
+
+(defmethod do-step 'zen.test/validate [ztx step]
+  (let [res (zen.core/validate ztx #{(get-in step [:do :schema])} (get-in step [:do :data]))]
+    (matcho/match res (translate-to-matcho (:match step)))))
+
+(defmethod do-step 'zen.test/validate-schema [ztx {do :do match :match}]
+  (let [sch (zen.core/get-symbol ztx (:schema do))
+        res (zen.core/validate ztx '#{zen/schema} sch)]
+    (matcho/match res (translate-to-matcho match))))
+
+(defmulti report-step (fn [_ztx step _result _test-case] (get-in step [:do :type])))
+
+(defmethod report-step :default [_ztx _step _result _test-case])
+
+(defmethod report-step 'zen.test/validate [_ztx step result test-case]
+  (println "## Case: " (or (:title test-case) (:id test-case)))
+  (println "  validate: " (:desc step) " \n  "  (get-in step [:do :schema]) "\n  " (get-in step [:do :data]))
+  (println (:message (last (get-in result [:results 'zen.validation-test 'test-validation])))))
+
+(defmethod report-step 'zen.test/validate-schema [ztx step result test-case]
+  (let [sch (zen.core/get-symbol ztx (get-in step [:do :schema]))]
+    (println "## Case: " (or (:title test-case) (:id test-case)))
+    (println "  validate: " (:desc step) " \n  " (get-in step [:do :schema])"\n  " sch)
+    (println (:message (last (get-in result [:results 'zen.validation-test 'test-validation]))))))
+
 (deftest test-validation
   (def ztx (zen.core/new-context {:unsafe true}))
   ;; (zen.core/read-ns ztx 'zen.all-tests)
@@ -39,13 +68,10 @@
 
   (zen.core/read-ns ztx 'zen.core-validate-test)
 
-  (matcho/match @ztx {:errors empty?})
+  #_(matcho/match @ztx {:errors empty?})
 
-  (doseq [case (zen.core/get-tags ztx 'zen.test/case)]
-    (doseq [{desc :desc do :do match :match} (:steps case)]
-      (let [res (zen.core/validate ztx #{(:schema do)} (:data do))]
-        (let [matcho-res (matcho/match res (translate-to-matcho match))]
-          (when-not (true? matcho-res)
-            (println "## Case: " (or (:title case) (:id case)))
-            (println "  validate: " desc " \n  "  (:schema do) "\n  " (:data do))
-            (println (:message (last (get-in matcho-res [:results 'zen.validation-test 'test-validation]))))))))))
+  (doseq [test-case (zen.core/get-tags ztx 'zen.test/case)
+          step,     (:steps test-case)]
+    (let [step-res (do-step ztx step)]
+      (when-not (true? step-res)
+        (report-step ztx step step-res test-case)))))
