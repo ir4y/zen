@@ -27,8 +27,11 @@
     Hiccup
     {:zen/tags #{form-engine zen/schema zen/tag}
      :type zen/map
-     :keys {:hiccup-layout {:type zen/any}
-            :engine {:const {:value Hiccup}}}
+     :require #{:hiccup-layout :engine}
+     :keys {
+            :hiccup-layout {:type zen/any}
+            :engine {:const {:value Hiccup}}
+            }
      }
     })
 
